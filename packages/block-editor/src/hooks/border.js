@@ -83,10 +83,10 @@ export function BorderPanel( props ) {
 				title={ __( 'Border' ) }
 				initialOpen={ false }
 			>
-				{ isStyleSupported && <BorderStyleEdit { ...props } /> }
 				{ isWidthSupported && <BorderWidthEdit { ...props } /> }
-				{ isRadiusSupported && <BorderRadiusEdit { ...props } /> }
+				{ isStyleSupported && <BorderStyleEdit { ...props } /> }
 				{ isColorSupported && <BorderColorEdit { ...props } /> }
+				{ isRadiusSupported && <BorderRadiusEdit { ...props } /> }
 			</PanelBody>
 		</InspectorControls>
 	);
