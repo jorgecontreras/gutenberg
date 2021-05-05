@@ -57,7 +57,17 @@ function gutenberg_apply_border_support( $block_type, $block_attributes ) {
 		isset( $block_attributes['style']['border']['radius'] )
 	) {
 		$border_radius = $block_attributes['style']['border']['radius'];
-		$styles[]      = sprintf( 'border-radius: %s;', $border_radius );
+
+		if ( is_array( $border_radius ) ) {
+			// We have individual border radius corner values.
+			foreach ( $border_radius as $key => $radius ) {
+				// Convert CamelCase corner name to kebab-case.
+				$corner   = strtolower( preg_replace( '/(?<!^)[A-Z]/', '-$0', $key ) );
+				$styles[] = sprintf( 'border-%s-radius: %s;', $corner, $radius );
+			}
+		} else {
+			$styles[] = sprintf( 'border-radius: %s;', $border_radius );
+		}
 	}
 
 	// Border style.

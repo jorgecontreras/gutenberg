@@ -1,17 +1,8 @@
 /**
- * WordPress dependencies
- */
-import { __experimentalUnitControl as UnitControl } from '@wordpress/components';
-import { useState } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
-import { CSS_UNITS, parseUnit } from './border';
+import BorderRadiusControl from '../components/border-radius-control';
 import { cleanEmptyObject } from './utils';
-
-const MIN_BORDER_RADIUS_VALUE = 0;
 
 /**
  * Inspector control panel containing the border radius related configuration.
@@ -24,15 +15,6 @@ export function BorderRadiusEdit( props ) {
 		attributes: { style },
 		setAttributes,
 	} = props;
-
-	// Step value is maintained in state so step is appropriate for current unit
-	// even when current radius value is undefined.
-	const initialStep = parseUnit( style?.border?.radius ) === 'px' ? 1 : 0.25;
-	const [ step, setStep ] = useState( initialStep );
-
-	const onUnitChange = ( newUnit ) => {
-		setStep( newUnit === 'px' ? 1 : 0.25 );
-	};
 
 	const onChange = ( newRadius ) => {
 		let newStyle = {
@@ -51,14 +33,9 @@ export function BorderRadiusEdit( props ) {
 	};
 
 	return (
-		<UnitControl
-			value={ style?.border?.radius }
-			label={ __( 'Radius' ) }
-			min={ MIN_BORDER_RADIUS_VALUE }
+		<BorderRadiusControl
+			values={ style?.border?.radius }
 			onChange={ onChange }
-			onUnitChange={ onUnitChange }
-			step={ step }
-			units={ CSS_UNITS }
 		/>
 	);
 }
