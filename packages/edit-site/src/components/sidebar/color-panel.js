@@ -14,8 +14,8 @@ export function useHasColorPanel( { supports } ) {
 	return (
 		supports.includes( 'color' ) ||
 		supports.includes( 'backgroundColor' ) ||
-		supports.includes( 'background' )
-		//supports.includes( LINK_COLOR )
+		supports.includes( 'background' ) ||
+		supports.includes( 'linkColor' )
 	);
 }
 
@@ -87,16 +87,16 @@ export default function ColorPanel( {
 		} );
 	}
 
-	//if ( supports.includes( LINK_COLOR ) ) {
-	//	const color = getStyle( name, LINK_COLOR );
-	//	const userColor = getStyle( name, LINK_COLOR, 'user' );
-	//	settings.push( {
-	//		colorValue: color,
-	//		onColorChange: ( value ) => setStyle( name, LINK_COLOR, value ),
-	//		label: __( 'Link color' ),
-	//		clearable: color === userColor,
-	//	} );
-	//}
+	if ( supports.includes( 'linkColor' ) ) {
+		const color = getStyle( name, 'linkColor' );
+		const userColor = getStyle( name, 'linkColor', 'user' );
+		settings.push( {
+			colorValue: color,
+			onColorChange: ( value ) => setStyle( name, 'linkColor', value ),
+			label: __( 'Link color' ),
+			clearable: color === userColor,
+		} );
+	}
 	return (
 		<PanelColorGradientSettings
 			title={ __( 'Color' ) }

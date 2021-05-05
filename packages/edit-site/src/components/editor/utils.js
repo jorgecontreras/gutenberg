@@ -15,10 +15,10 @@ import { store as editSiteStore } from '../../store';
 export const ROOT_BLOCK_NAME = 'root';
 export const ROOT_BLOCK_SELECTOR = 'body';
 export const ROOT_BLOCK_SUPPORTS = [
-	//'--wp--style--color--link',
 	'background',
 	'backgroundColor',
 	'color',
+	'linkColor',
 	'fontFamily',
 	'fontSize',
 	'fontStyle',

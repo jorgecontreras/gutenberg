@@ -1,7 +1,19 @@
 /**
  * External dependencies
  */
-import { capitalize, get, has, omit, omitBy, startsWith } from 'lodash';
+import {
+	capitalize,
+	kebabCase,
+	get,
+	has,
+	map,
+	omit,
+	omitBy,
+	startsWith,
+	isEmpty,
+	first,
+} from 'lodash';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -12,7 +24,7 @@ import {
 	hasBlockSupport,
 	__EXPERIMENTAL_STYLE_PROPERTY as STYLE_PROPERTY,
 } from '@wordpress/blocks';
-import { createHigherOrderComponent } from '@wordpress/compose';
+import { createHigherOrderComponent, useInstanceId } from '@wordpress/compose';
 
 /**
  * Internal dependencies
@@ -30,6 +42,16 @@ const styleSupportKeys = [
 	COLOR_SUPPORT_KEY,
 	SPACING_SUPPORT_KEY,
 ];
+
+export const ELEMENTS = {
+	link: 'a',
+	h1: 'h1',
+	h2: 'h2',
+	h3: 'h3',
+	h4: 'h4',
+	h5: 'h5',
+	h6: 'h6',
+};
 
 const hasStyleSupport = ( blockType ) =>
 	styleSupportKeys.some( ( key ) => hasBlockSupport( blockType, key ) );
@@ -59,7 +81,8 @@ export function getInlineStyles( styles = {} ) {
 	Object.keys( STYLE_PROPERTY ).forEach( ( propKey ) => {
 		const path = STYLE_PROPERTY[ propKey ].value;
 		const subPaths = STYLE_PROPERTY[ propKey ].properties;
-		if ( has( styles, path ) ) {
+		// Ignore styles on elements because they are handled on the server.
+		if ( has( styles, path ) && 'elements' !== first( path ) ) {
 			if ( !! subPaths ) {
 				subPaths.forEach( ( suffix ) => {
 					output[
@@ -73,6 +96,24 @@ export function getInlineStyles( styles = {} ) {
 	} );
 
 	return output;
+}
+
+function compileElementsStyles( selector, elements = {} ) {
+	return map( elements, ( styles, element ) => {
+		const linearStyles = getInlineStyles( styles );
+		if ( ! isEmpty( linearStyles ) ) {
+			return [
+				`.${ selector } ${ ELEMENTS[ element ] }{`,
+				...map(
+					linearStyles,
+					( value, property ) =>
+						`\t${ kebabCase( property ) }: ${ value }`
+				),
+				'}',
+			].join( '\n' );
+		}
+		return '';
+	} ).join( '\n' );
 }
 
 /**
@@ -202,6 +243,45 @@ export const withBlockControls = createHigherOrderComponent(
 	'withToolbarControls'
 );
 
+/**
+ * Override the default block element to include duotone styles.
+ *
+ * @param  {Function} BlockListBlock Original component
+ * @return {Function}                Wrapped component
+ */
+const withElementsStyles = createHigherOrderComponent(
+	( BlockListBlock ) => ( props ) => {
+		const elements = props.attributes.style?.elements;
+		if ( ! elements ) {
+			return <BlockListBlock { ...props } />;
+		}
+		const blockElementsContainerIdentifier = `wp-block-elements-container-${ useInstanceId(
+			BlockListBlock
+		) }`;
+		const styles = compileElementsStyles(
+			blockElementsContainerIdentifier,
+			props.attributes.style?.elements
+		);
+
+		return (
+			<>
+				<style
+					dangerouslySetInnerHTML={ {
+						__html: styles,
+					} }
+				/>
+				<BlockListBlock
+					{ ...props }
+					className={ classnames(
+						props.classname,
+						blockElementsContainerIdentifier
+					) }
+				/>
+			</>
+		);
+	}
+);
+
 addFilter(
 	'blocks.registerBlockType',
 	'core/style/addAttribute',
@@ -224,4 +304,10 @@ addFilter(
 	'editor.BlockEdit',
 	'core/style/with-block-controls',
 	withBlockControls
+);
+
+addFilter(
+	'editor.BlockListBlock',
+	'core/editor/with-elements-styles',
+	withElementsStyles
 );

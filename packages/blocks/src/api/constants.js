@@ -41,6 +41,10 @@ export const __EXPERIMENTAL_STYLE_PROPERTY = {
 		value: [ 'color', 'text' ],
 		support: [ 'color' ],
 	},
+	linkColor: {
+		value: [ 'elements', 'link', 'color', 'text' ],
+		support: [ 'color', 'link' ],
+	},
 	fontFamily: {
 		value: [ 'typography', 'fontFamily' ],
 		support: [ '__experimentalFontFamily' ],
