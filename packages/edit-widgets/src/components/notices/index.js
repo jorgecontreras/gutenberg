@@ -21,6 +21,10 @@ function Notices() {
 	} );
 	const { removeNotice } = useDispatch( noticesStore );
 
+	if ( snackbarNotices.length === 0 ) {
+		return null;
+	}
+
 	return (
 		<SnackbarList
 			notices={ snackbarNotices }

@@ -42,11 +42,13 @@ export function EditorNotices( { notices, onRemove } ) {
 			>
 				<TemplateValidationNotice />
 			</NoticeList>
-			<SnackbarList
-				notices={ snackbarNotices }
-				className="components-editor-notices__snackbar"
-				onRemove={ onRemove }
-			/>
+			{ snackbarNotices.length > 0 && (
+				<SnackbarList
+					notices={ snackbarNotices }
+					className="components-editor-notices__snackbar"
+					onRemove={ onRemove }
+				/>
+			) }
 		</>
 	);
 }

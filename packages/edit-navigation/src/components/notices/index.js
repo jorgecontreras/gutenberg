@@ -39,11 +39,13 @@ export default function EditNavigationNotices() {
 				className="edit-navigation-notices__notice-list"
 				onRemove={ removeNotice }
 			/>
-			<SnackbarList
-				notices={ snackbarNotices }
-				className="edit-navigation-notices__snackbar-list"
-				onRemove={ removeNotice }
-			/>
+			{ snackbarNotices.length > 0 && (
+				<SnackbarList
+					notices={ snackbarNotices }
+					className="edit-navigation-notices__snackbar-list"
+					onRemove={ removeNotice }
+				/>
+			) }
 		</>
 	);
 }
