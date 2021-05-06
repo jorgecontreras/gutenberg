@@ -16,7 +16,7 @@ import {
 	BlockToolbar,
 	store as blockEditorStore,
 } from '@wordpress/block-editor';
-import { Toolbar, ToolbarButton } from '@wordpress/components';
+import { Toolbar, ToolbarButton, Tooltip } from '@wordpress/components';
 import {
 	keyboardClose,
 	undo as undoIcon,
@@ -29,7 +29,6 @@ import { store as editorStore } from '@wordpress/editor';
  */
 import styles from './style.scss';
 import { store as editPostStore } from '../../../store';
-import Tooltip from '../../../../../components/src/focal-point-picker/tooltip';
 
 function HeaderToolbar( {
 	hasRedo,
@@ -76,65 +75,61 @@ function HeaderToolbar( {
 	};
 
 	return (
-		<Tooltip
-			onPress={ () => setTooltipVisible( false ) }
-			visible={ tooltipVisible }
+		<View
+			style={ getStylesFromColorScheme(
+				styles.container,
+				styles.containerDark
+			) }
 		>
-			<View
-				style={ getStylesFromColorScheme(
-					styles.container,
-					styles.containerDark
-				) }
+			{ /**
+			 * TODO: David
+			 *
+			 * This works, but requires manual placement of the label above the
+			 * reference. Cannot place tooltip inside of the ScrollView as elements
+			 * overflowing are hidden entirely. Do we need an alternative method?
+			 *
+			 * Additionally, there are issue with dismissing. Scrolling content
+			 * does not dismiss. Certain areas above the toolbar do not allow
+			 * scrolling, which may be unrelated.
+			 *
+			 * Also, verify that tapping to dismissing anywhere works. Is it
+			 * worthwhile creating an alternative API that matches the web's
+			 * Tooltip and relies up Modal? All tips for this project do not point
+			 * to content within a modal, so we don't have to worry about double
+			 * modals on iOS.
+			 */ }
+			<ScrollView
+				ref={ scrollViewRef }
+				onContentSizeChange={ scrollToStart }
+				horizontal={ true }
+				showsHorizontalScrollIndicator={ false }
+				keyboardShouldPersistTaps="always"
+				alwaysBounceHorizontal={ false }
+				contentContainerStyle={ styles.scrollableContent }
 			>
-				{ /**
-				 * TODO: David
-				 *
-				 * This works, but requires manual placement of the label above the
-				 * reference. Cannot place tooltip inside of the ScrollView as elements
-				 * overflowing are hidden entirely. Do we need an alternative method?
-				 *
-				 * Additionally, there are issue with dismissing. Scrolling content
-				 * does not dismiss. Certain areas above the toolbar do not allow
-				 * scrolling, which may be unrelated.
-				 *
-				 * Also, verify that tapping to dismissing anywhere works. Is it
-				 * worthwhile creating an alternative API that matches the web's
-				 * Tooltip and relies up Modal? All tips for this project do not point
-				 * to content within a modal, so we don't have to worry about double
-				 * modals on iOS.
-				 */ }
-				<Tooltip.Label
-					align="left"
-					xOffset={ 5 }
-					text={ 'Tap to add content' }
-				/>
-				<ScrollView
-					ref={ scrollViewRef }
-					onContentSizeChange={ scrollToStart }
-					horizontal={ true }
-					showsHorizontalScrollIndicator={ false }
-					keyboardShouldPersistTaps="always"
-					alwaysBounceHorizontal={ false }
-					contentContainerStyle={ styles.scrollableContent }
+				<Tooltip
+					postion="top left"
+					text={ __( 'Tap to add content' ) }
+					visible={ tooltipVisible }
 				>
 					<Inserter disabled={ ! showInserter } />
-					{ renderHistoryButtons() }
-					<BlockToolbar />
-				</ScrollView>
-				{ showKeyboardHideButton && (
-					<Toolbar passedStyle={ styles.keyboardHideContainer }>
-						<ToolbarButton
-							title={ __( 'Hide keyboard' ) }
-							icon={ keyboardClose }
-							onClick={ onHideKeyboard }
-							extraProps={ {
-								hint: __( 'Tap to hide the keyboard' ),
-							} }
-						/>
-					</Toolbar>
-				) }
-			</View>
-		</Tooltip>
+				</Tooltip>
+				{ renderHistoryButtons() }
+				<BlockToolbar />
+			</ScrollView>
+			{ showKeyboardHideButton && (
+				<Toolbar passedStyle={ styles.keyboardHideContainer }>
+					<ToolbarButton
+						title={ __( 'Hide keyboard' ) }
+						icon={ keyboardClose }
+						onClick={ onHideKeyboard }
+						extraProps={ {
+							hint: __( 'Tap to hide the keyboard' ),
+						} }
+					/>
+				</Toolbar>
+			) }
+		</View>
 	);
 }
 
