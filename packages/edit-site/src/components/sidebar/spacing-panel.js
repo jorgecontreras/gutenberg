@@ -12,7 +12,7 @@ import { __experimentalUseCustomSides as useCustomSides } from '@wordpress/block
 /**
  * Internal dependencies
  */
-import { useEditorFeature } from '../editor/utils';
+import { useThemeSetting } from '../editor/utils';
 
 const isWeb = Platform.OS === 'web';
 const CSS_UNITS = [
@@ -51,7 +51,7 @@ export function useHasSpacingPanel( context ) {
 
 export function useHasPadding( { name, supports } ) {
 	return (
-		useEditorFeature( 'spacing.customPadding', name ) &&
+		useThemeSetting( 'spacing.customPadding', name ) &&
 		supports.includes( 'padding' )
 	);
 }
@@ -63,7 +63,7 @@ function filterUnitsWithSettings( settings = [], units = [] ) {
 }
 
 function useCustomUnits( { units, contextName } ) {
-	const availableUnits = useEditorFeature( 'spacing.units', contextName );
+	const availableUnits = useThemeSetting( 'spacing.units', contextName );
 	const usedUnits = filterUnitsWithSettings(
 		! availableUnits ? [] : availableUnits,
 		units
