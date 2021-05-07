@@ -101,6 +101,17 @@ class WP_Theme_JSON_Test extends WP_UnitTestCase {
 								'bottom' => '24px',
 							),
 						),
+						'border'  => array(
+							'radius' => '10px',
+						),
+					),
+					'core/image' => array(
+						'border' => array(
+							'radius' => array(
+								'border-top-left-radius' => '10px',
+								'border-bottom-right-radius' => '1em',
+							),
+						),
 					),
 				),
 				'misc'     => 'value',
@@ -108,11 +119,11 @@ class WP_Theme_JSON_Test extends WP_UnitTestCase {
 		);
 
 		$this->assertEquals(
-			'body{--wp--preset--color--grey: grey;--wp--preset--font-family--small: 14px;--wp--preset--font-family--big: 41px;}.wp-block-group{--wp--custom--base-font: 16;--wp--custom--line-height--small: 1.2;--wp--custom--line-height--medium: 1.4;--wp--custom--line-height--large: 1.8;}body{--wp--style--color--link: #111;color: var(--wp--preset--color--grey);}.wp-block-group{padding-top: 12px;padding-bottom: 24px;}.has-grey-color{color: grey !important;}.has-grey-background-color{background-color: grey !important;}.has-grey-border-color{border-color: grey !important;}',
+			'body{--wp--preset--color--grey: grey;--wp--preset--font-family--small: 14px;--wp--preset--font-family--big: 41px;}.wp-block-group{--wp--custom--base-font: 16;--wp--custom--line-height--small: 1.2;--wp--custom--line-height--medium: 1.4;--wp--custom--line-height--large: 1.8;}body{--wp--style--color--link: #111;color: var(--wp--preset--color--grey);}.wp-block-group{border-radius: 10px; padding-top: 12px;padding-bottom: 24px;}.wp-block-image{border-top-left-radius: 10px; border-bottom-right-radius: 1em;}.has-grey-color{color: grey !important;}.has-grey-background-color{background-color: grey !important;}.has-grey-border-color{border-color: grey !important;}',
 			$theme_json->get_stylesheet()
 		);
 		$this->assertEquals(
-			'body{--wp--style--color--link: #111;color: var(--wp--preset--color--grey);}.wp-block-group{padding-top: 12px;padding-bottom: 24px;}.has-grey-color{color: grey !important;}.has-grey-background-color{background-color: grey !important;}.has-grey-border-color{border-color: grey !important;}',
+			'body{--wp--style--color--link: #111;color: var(--wp--preset--color--grey);}.wp-block-group{border-radius: 10px; padding-top: 12px;padding-bottom: 24px;}.wp-block-image{border-top-left-radius: 10px; border-bottom-right-radius: 1em;}.has-grey-color{color: grey !important;}.has-grey-background-color{background-color: grey !important;}.has-grey-border-color{border-color: grey !important;}',
 			$theme_json->get_stylesheet( 'block_styles' )
 		);
 		$this->assertEquals(

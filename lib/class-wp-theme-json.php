@@ -232,6 +232,19 @@ class WP_Theme_JSON {
 		'border-radius'            => array(
 			'value' => array( 'border', 'radius' ),
 		),
+		// This is deliberately separate to the border-radius entry above.
+		// It allows for backwards compatible shorthand e.g. border-radius: 10px
+		// while below provides a means to explicitly set the CSS property name
+		// where the flat array configuration approach builds an incorrect name.
+		'corner-border-radius'     => array(
+			'value'      => array( 'border', 'radius' ),
+			'properties' => array(
+				'border-top-left-radius'     => 'topLeft',
+				'border-top-right-radius'    => 'topRight',
+				'border-bottom-left-radius'  => 'bottomLeft',
+				'border-bottom-right-radius' => 'bottomRight',
+			),
+		),
 		'border-color'             => array(
 			'value' => array( 'border', 'color' ),
 		),
@@ -340,8 +353,12 @@ class WP_Theme_JSON {
 			foreach ( self::PROPERTIES_METADATA as $key => $metadata ) {
 				$to_property[ $key ] = $key;
 				if ( self::has_properties( $metadata ) ) {
-					foreach ( $metadata['properties'] as $property ) {
-						$to_property[ $key . '-' . $property ] = $key;
+					foreach ( $metadata['properties'] as $name => $property ) {
+						if ( is_numeric( $name ) ) {
+							$to_property[ $key . '-' . $property ] = $key;
+						} else {
+							$to_property[ $name ] = $key;
+						}
 					}
 				}
 			}
@@ -536,7 +553,7 @@ class WP_Theme_JSON {
 	private static function get_property_value( $styles, $path ) {
 		$value = _wp_array_get( $styles, $path, '' );
 
-		if ( '' === $value ) {
+		if ( '' === $value || is_array( $value ) ) {
 			return $value;
 		}
 
@@ -598,9 +615,10 @@ class WP_Theme_JSON {
 			// they contain multiple values instead of a single one.
 			// An example of this is the padding property.
 			if ( self::has_properties( $metadata ) ) {
-				foreach ( $metadata['properties'] as $property ) {
-					$properties[] = array(
-						'name'  => $name . '-' . $property,
+				foreach ( $metadata['properties'] as $key => $property ) {
+					$property_name = is_numeric( $key ) ? $name . '-' . $property : $key;
+					$properties[]  = array(
+						'name'  => $property_name,
 						'value' => array_merge( $metadata['value'], array( $property ) ),
 					);
 				}
@@ -614,7 +632,7 @@ class WP_Theme_JSON {
 
 		foreach ( $properties as $prop ) {
 			$value = self::get_property_value( $styles, $prop['value'] );
-			if ( ! empty( $value ) ) {
+			if ( ! empty( $value ) && ! is_array( $value ) ) {
 				$declarations[] = array(
 					'name'  => $prop['name'],
 					'value' => $value,
